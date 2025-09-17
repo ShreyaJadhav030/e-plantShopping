@@ -1,144 +1,96 @@
 import React, { useState } from 'react';
-import './ProductList.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice';
 import CartItem from './CartItem';
-import { useDispatch } from 'react-redux';
-import { addItem } from '../CartSlice'; // Adjust path if needed
+import './ProductList.css';
 
 function ProductList({ onHomeClick }) {
-  const [showCart, setShowCart] = useState(false);
-  const [addedToCart, setAddedToCart] = useState({});
   const dispatch = useDispatch();
+  const cartItems = useSelector(state => state.cart.items);
+  const [showCart, setShowCart] = useState(false);
 
+  // Full plants array
   const plantsArray = [
     {
       category: "Air Purifying Plants",
       plants: [
-        {
-          id: 1,
-          name: "Snake Plant",
-          image: "https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant-5939187_1280.jpg",
-          description: "Produces oxygen at night, improving air quality.",
-          cost: "$15"
-        },
-        {
-          id: 2,
-          name: "Spider Plant",
-          image: "https://cdn.pixabay.com/photo/2018/07/11/06/47/chlorophytum-3530413_1280.jpg",
-          description: "Filters formaldehyde and xylene from the air.",
-          cost: "$12"
-        },
-        {
-          id: 3,
-          name: "Peace Lily",
-          image: "https://cdn.pixabay.com/photo/2019/06/12/14/14/peace-lilies-4269365_1280.jpg",
-          description: "Removes mold spores and purifies the air.",
-          cost: "$18"
-        },
-        {
-          id: 4,
-          name: "Areca Palm",
-          image: "https://cdn.pixabay.com/photo/2020/01/13/18/02/areca-palm-4762429_1280.jpg",
-          description: "Humidifies indoor air naturally.",
-          cost: "$25"
-        }
+        { name: "Snake Plant", image: "https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant-5939187_1280.jpg", description: "Produces oxygen at night, improving air quality.", cost: "$15" },
+        { name: "Spider Plant", image: "https://cdn.pixabay.com/photo/2018/07/11/06/47/chlorophytum-3530413_1280.jpg", description: "Filters formaldehyde and xylene from the air.", cost: "$12" },
+        { name: "Peace Lily", image: "https://cdn.pixabay.com/photo/2019/06/12/14/14/peace-lilies-4269365_1280.jpg", description: "Removes mold spores and purifies the air.", cost: "$18" },
+        { name: "Boston Fern", image: "https://cdn.pixabay.com/photo/2020/04/30/19/52/boston-fern-5114414_1280.jpg", description: "Adds humidity to the air and removes toxins.", cost: "$20" },
+        { name: "Rubber Plant", image: "https://cdn.pixabay.com/photo/2020/02/15/11/49/flower-4850729_1280.jpg", description: "Easy to care for and effective at removing toxins.", cost: "$17" },
+        { name: "Aloe Vera", image: "https://cdn.pixabay.com/photo/2018/04/02/07/42/leaf-3283175_1280.jpg", description: "Purifies the air and has healing properties for skin.", cost: "$14" }
+      ]
+    },
+    {
+      category: "Aromatic Fragrant Plants",
+      plants: [
+        { name: "Lavender", image: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", description: "Calming scent, used in aromatherapy.", cost: "$20" },
+        { name: "Jasmine", image: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", description: "Sweet fragrance, promotes relaxation.", cost: "$18" },
+        { name: "Rosemary", image: "https://cdn.pixabay.com/photo/2019/10/11/07/12/rosemary-4541241_1280.jpg", description: "Invigorating scent, often used in cooking.", cost: "$15" },
+        { name: "Mint", image: "https://cdn.pixabay.com/photo/2016/01/07/18/16/mint-1126282_1280.jpg", description: "Refreshing aroma, used in teas and cooking.", cost: "$12" },
+        { name: "Lemon Balm", image: "https://cdn.pixabay.com/photo/2019/09/16/07/41/balm-4480134_1280.jpg", description: "Citrusy scent, relieves stress and promotes sleep.", cost: "$14" },
+        { name: "Hyacinth", image: "https://cdn.pixabay.com/photo/2019/04/07/20/20/hyacinth-4110726_1280.jpg", description: "Beautiful flowering plant with fragrant smell.", cost: "$22" }
+      ]
+    },
+    {
+      category: "Insect Repellent Plants",
+      plants: [
+        { name: "Oregano", image: "https://cdn.pixabay.com/photo/2015/05/30/21/20/oregano-790702_1280.jpg", description: "Deters certain insects naturally.", cost: "$10" },
+        { name: "Marigold", image: "https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg", description: "Natural insect repellent, adds color to garden.", cost: "$8" },
+        { name: "Geraniums", image: "https://cdn.pixabay.com/photo/2012/04/26/21/51/flowerpot-43270_1280.jpg", description: "Repels insects while adding a pleasant scent.", cost: "$20" },
+        { name: "Basil", image: "https://cdn.pixabay.com/photo/2016/07/24/20/48/tulsi-1539181_1280.jpg", description: "Repels flies and mosquitoes.", cost: "$9" },
+        { name: "Catnip", image: "https://cdn.pixabay.com/photo/2015/07/02/21/55/cat-829681_1280.jpg", description: "Repels mosquitoes and attracts cats.", cost: "$13" }
       ]
     },
     {
       category: "Medicinal Plants",
       plants: [
-        {
-          id: 5,
-          name: "Aloe Vera",
-          image: "https://cdn.pixabay.com/photo/2018/04/02/07/42/leaf-3283175_1280.jpg",
-          description: "Soothing gel used for skin ailments.",
-          cost: "$14"
-        },
-        {
-          id: 6,
-          name: "Tulsi (Holy Basil)",
-          image: "https://cdn.pixabay.com/photo/2018/05/06/12/28/basil-3373206_1280.jpg",
-          description: "Boosts immunity and treats colds.",
-          cost: "$10"
-        },
-        {
-          id: 7,
-          name: "Mint",
-          image: "https://cdn.pixabay.com/photo/2017/05/30/12/30/mint-2357981_1280.jpg",
-          description: "Aids digestion and relieves nausea.",
-          cost: "$8"
-        },
-        {
-          id: 8,
-          name: "Chamomile",
-          image: "https://cdn.pixabay.com/photo/2016/08/19/19/48/flowers-1606041_1280.jpg",
-          description: "Soothes anxiety and promotes sleep.",
-          cost: "$15"
-        }
-      ]
-    },
-    {
-      category: "Flowering Plants",
-      plants: [
-        {
-          id: 9,
-          name: "Rose",
-          image: "https://cdn.pixabay.com/photo/2016/04/01/11/23/rose-1299202_1280.png",
-          description: "Symbol of love and beauty with fragrant blooms.",
-          cost: "$20"
-        },
-        {
-          id: 10,
-          name: "Hibiscus",
-          image: "https://cdn.pixabay.com/photo/2018/08/26/20/25/hibiscus-3633355_1280.jpg",
-          description: "Bright flowers used in herbal teas.",
-          cost: "$18"
-        },
-        {
-          id: 11,
-          name: "Jasmine",
-          image: "https://cdn.pixabay.com/photo/2017/05/23/20/36/jasmine-2347539_1280.jpg",
-          description: "Sweet fragrance, used in perfumes.",
-          cost: "$22"
-        },
-        {
-          id: 12,
-          name: "Sunflower",
-          image: "https://cdn.pixabay.com/photo/2016/11/29/03/53/beautiful-1867323_1280.jpg",
-          description: "Brightens gardens and provides seeds.",
-          cost: "$16"
-        }
+        { name: "Echinacea", image: "https://cdn.pixabay.com/photo/2014/12/05/03/53/echinacea-557477_1280.jpg", description: "Boosts immune system, helps fight colds.", cost: "$16" },
+        { name: "Peppermint", image: "https://cdn.pixabay.com/photo/2017/07/12/12/23/peppermint-2496773_1280.jpg", description: "Relieves digestive issues and headaches.", cost: "$13" },
+        { name: "Chamomile", image: "https://cdn.pixabay.com/photo/2016/08/19/19/48/flowers-1606041_1280.jpg", description: "Soothes anxiety and promotes sleep.", cost: "$15" },
+        { name: "Calendula", image: "https://cdn.pixabay.com/photo/2019/07/15/18/28/flowers-4340127_1280.jpg", description: "Heals wounds and soothes skin irritations.", cost: "$12" }
       ]
     }
   ];
 
   const handleAddToCart = (plant) => {
-    dispatch(addItem(plant));
-    setAddedToCart((prev) => ({
-      ...prev,
-      [plant.id]: true
-    }));
+    if (!cartItems.some(item => item.name === plant.name)) {
+      dispatch(addItem(plant));
+    }
+  };
+
+  const getTotalQuantity = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   return (
     <div>
+      <div className="navbar">
+        <h2>Paradise Nursery</h2>
+        <div className="cart-status">
+          🛒 Cart Items: {getTotalQuantity()}
+          <button onClick={() => setShowCart(!showCart)}>View Cart</button>
+        </div>
+      </div>
+
       {!showCart ? (
         <div className="product-grid">
-          {plantsArray.map((category, index) => (
-            <div key={index} className="category-section">
-              <h2 className="category-title">{category.category}</h2>
-              <div className="plants-grid">
-                {category.plants.map((plant) => (
-                  <div key={plant.id} className="product-card">
+          {plantsArray.map((category, i) => (
+            <div key={i}>
+              <h3>{category.category}</h3>
+              <div className="category-grid">
+                {category.plants.map((plant, j) => (
+                  <div key={j} className="product-card">
                     <img src={plant.image} alt={plant.name} className="product-img" />
-                    <h3>{plant.name}</h3>
+                    <h4>{plant.name}</h4>
                     <p>{plant.description}</p>
                     <p>Price: {plant.cost}</p>
                     <button
                       onClick={() => handleAddToCart(plant)}
-                      disabled={addedToCart[plant.id]}
-                      className="add-to-cart-btn"
+                      disabled={cartItems.some(item => item.name === plant.name)}
                     >
-                      {addedToCart[plant.id] ? "Added to Cart" : "Add to Cart"}
+                      {cartItems.some(item => item.name === plant.name) ? "Added to Cart" : "Add to Cart"}
                     </button>
                   </div>
                 ))}

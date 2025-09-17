@@ -1,42 +1,28 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
+import './CartItem.css';
 
 function CartItem({ onContinueShopping }) {
-  const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // 🔹 Calculate total cost of all items
   const calculateTotalAmount = () => {
     return cartItems.reduce((total, item) => {
-      const itemPrice = parseFloat(item.cost.substring(1)); // remove "$"
-      return total + itemPrice * item.quantity;
+      const price = parseFloat(item.cost.substring(1));
+      return total + price * item.quantity;
     }, 0);
   };
 
-  // 🔹 Calculate subtotal for each item
   const calculateItemTotal = (item) => {
-    const itemPrice = parseFloat(item.cost.substring(1));
-    return itemPrice * item.quantity;
+    const price = parseFloat(item.cost.substring(1));
+    return price * item.quantity;
   };
 
-  // 🔹 Continue Shopping
-  const handleContinueShopping = (e) => {
-    e.preventDefault();
-    onContinueShopping(e);
-  };
-
-  // 🔹 Checkout (future feature)
-  const handleCheckoutShopping = (e) => {
-    alert('Functionality to be added for future reference');
-  };
-
-  // 🔹 Increment item quantity
   const handleIncrement = (item) => {
     dispatch(updateQuantity({ name: item.name, amount: item.quantity + 1 }));
   };
 
-  // 🔹 Decrement item quantity (remove if goes below 1)
   const handleDecrement = (item) => {
     if (item.quantity > 1) {
       dispatch(updateQuantity({ name: item.name, amount: item.quantity - 1 }));
@@ -45,7 +31,6 @@ function CartItem({ onContinueShopping }) {
     }
   };
 
-  // 🔹 Remove item
   const handleRemove = (item) => {
     dispatch(removeItem(item.name));
   };
@@ -53,7 +38,6 @@ function CartItem({ onContinueShopping }) {
   return (
     <div className="cart-container">
       <h2>Shopping Cart</h2>
-
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
@@ -66,7 +50,6 @@ function CartItem({ onContinueShopping }) {
                 <p>{item.description}</p>
                 <p>Unit Price: {item.cost}</p>
                 <p>Subtotal: ${calculateItemTotal(item)}</p>
-
                 <div className="cart-item-actions">
                   <button onClick={() => handleDecrement(item)}>-</button>
                   <span>{item.quantity}</span>
@@ -79,8 +62,8 @@ function CartItem({ onContinueShopping }) {
 
           <h3>Total: ${calculateTotalAmount()}</h3>
           <div className="cart-buttons">
-            <button onClick={handleContinueShopping}>Continue Shopping</button>
-            <button onClick={handleCheckoutShopping}>Checkout</button>
+            <button onClick={onContinueShopping}>Continue Shopping</button>
+            <button onClick={() => alert("Checkout functionality to be added")}>Checkout</button>
           </div>
         </div>
       )}
