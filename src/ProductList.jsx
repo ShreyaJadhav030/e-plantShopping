@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem } from './CartSlice';
-import CartItem from './CartItem';
+import { addItem } from './CartSlice.jsx';
+import CartItem from './CartItem.jsx';
 import './ProductList.css';
 
 function ProductList({ onHomeClick }) {
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.cart.items);
   const [showCart, setShowCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState({});
 
-  // Full plants array
   const plantsArray = [
     {
       category: "Air Purifying Plants",
@@ -30,77 +29,52 @@ function ProductList({ onHomeClick }) {
         { name: "Rosemary", image: "https://cdn.pixabay.com/photo/2019/10/11/07/12/rosemary-4541241_1280.jpg", description: "Invigorating scent, often used in cooking.", cost: "$15" },
         { name: "Mint", image: "https://cdn.pixabay.com/photo/2016/01/07/18/16/mint-1126282_1280.jpg", description: "Refreshing aroma, used in teas and cooking.", cost: "$12" },
         { name: "Lemon Balm", image: "https://cdn.pixabay.com/photo/2019/09/16/07/41/balm-4480134_1280.jpg", description: "Citrusy scent, relieves stress and promotes sleep.", cost: "$14" },
-        { name: "Hyacinth", image: "https://cdn.pixabay.com/photo/2019/04/07/20/20/hyacinth-4110726_1280.jpg", description: "Beautiful flowering plant with fragrant smell.", cost: "$22" }
+        { name: "Hyacinth", image: "https://cdn.pixabay.com/photo/2019/04/07/20/20/hyacinth-4110726_1280.jpg", description: "Beautiful flowering plant with fragrant blooms.", cost: "$22" }
       ]
     },
     {
       category: "Insect Repellent Plants",
       plants: [
-        { name: "Oregano", image: "https://cdn.pixabay.com/photo/2015/05/30/21/20/oregano-790702_1280.jpg", description: "Deters certain insects naturally.", cost: "$10" },
-        { name: "Marigold", image: "https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg", description: "Natural insect repellent, adds color to garden.", cost: "$8" },
-        { name: "Geraniums", image: "https://cdn.pixabay.com/photo/2012/04/26/21/51/flowerpot-43270_1280.jpg", description: "Repels insects while adding a pleasant scent.", cost: "$20" },
+        { name: "Oregano", image: "https://cdn.pixabay.com/photo/2015/05/30/21/20/oregano-790702_1280.jpg", description: "Repels insects.", cost: "$10" },
+        { name: "Marigold", image: "https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg", description: "Natural insect repellent.", cost: "$8" },
+        { name: "Geraniums", image: "https://cdn.pixabay.com/photo/2012/04/26/21/51/flowerpot-43270_1280.jpg", description: "Repels insects and adds scent.", cost: "$20" },
         { name: "Basil", image: "https://cdn.pixabay.com/photo/2016/07/24/20/48/tulsi-1539181_1280.jpg", description: "Repels flies and mosquitoes.", cost: "$9" },
         { name: "Catnip", image: "https://cdn.pixabay.com/photo/2015/07/02/21/55/cat-829681_1280.jpg", description: "Repels mosquitoes and attracts cats.", cost: "$13" }
-      ]
-    },
-    {
-      category: "Medicinal Plants",
-      plants: [
-        { name: "Echinacea", image: "https://cdn.pixabay.com/photo/2014/12/05/03/53/echinacea-557477_1280.jpg", description: "Boosts immune system, helps fight colds.", cost: "$16" },
-        { name: "Peppermint", image: "https://cdn.pixabay.com/photo/2017/07/12/12/23/peppermint-2496773_1280.jpg", description: "Relieves digestive issues and headaches.", cost: "$13" },
-        { name: "Chamomile", image: "https://cdn.pixabay.com/photo/2016/08/19/19/48/flowers-1606041_1280.jpg", description: "Soothes anxiety and promotes sleep.", cost: "$15" },
-        { name: "Calendula", image: "https://cdn.pixabay.com/photo/2019/07/15/18/28/flowers-4340127_1280.jpg", description: "Heals wounds and soothes skin irritations.", cost: "$12" }
       ]
     }
   ];
 
   const handleAddToCart = (plant) => {
-    if (!cartItems.some(item => item.name === plant.name)) {
-      dispatch(addItem(plant));
-    }
-  };
-
-  const getTotalQuantity = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
+    dispatch(addItem(plant));
+    setAddedToCart({ ...addedToCart, [plant.name]: true });
   };
 
   return (
     <div>
-      <div className="navbar">
-        <h2>Paradise Nursery</h2>
-        <div className="cart-status">
-          🛒 Cart Items: {getTotalQuantity()}
-          <button onClick={() => setShowCart(!showCart)}>View Cart</button>
-        </div>
-      </div>
-
-      {!showCart ? (
-        <div className="product-grid">
-          {plantsArray.map((category, i) => (
-            <div key={i}>
-              <h3>{category.category}</h3>
-              <div className="category-grid">
-                {category.plants.map((plant, j) => (
-                  <div key={j} className="product-card">
-                    <img src={plant.image} alt={plant.name} className="product-img" />
-                    <h4>{plant.name}</h4>
-                    <p>{plant.description}</p>
-                    <p>Price: {plant.cost}</p>
-                    <button
-                      onClick={() => handleAddToCart(plant)}
-                      disabled={cartItems.some(item => item.name === plant.name)}
-                    >
-                      {cartItems.some(item => item.name === plant.name) ? "Added to Cart" : "Add to Cart"}
-                    </button>
-                  </div>
-                ))}
-              </div>
+      <div className="product-grid">
+        {plantsArray.map(category => (
+          <div key={category.category}>
+            <h2>{category.category}</h2>
+            <div className="plants-category">
+              {category.plants.map(plant => (
+                <div className="plant-card" key={plant.name}>
+                  <img src={plant.image} alt={plant.name} />
+                  <h3>{plant.name}</h3>
+                  <p>{plant.description}</p>
+                  <p>{plant.cost}</p>
+                  <button
+                    onClick={() => handleAddToCart(plant)}
+                    disabled={addedToCart[plant.name]}
+                  >
+                    {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
-        <CartItem onContinueShopping={() => setShowCart(false)} />
-      )}
+          </div>
+        ))}
+      </div>
+      {showCart && <CartItem />}
     </div>
   );
 }
