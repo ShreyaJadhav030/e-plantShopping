@@ -7,33 +7,28 @@ const cartSlice = createSlice({
   },
   reducers: {
     addItem: (state, action) => {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
+      const existingItem = state.items.find(item => item.name === action.payload.name);
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += 1; // If plant already in cart, increase quantity
       } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        state.items.push({ ...action.payload, quantity: 1 }); // Else, add new plant with quantity 1
       }
     },
     removeItem: (state, action) => {
-      state.items = state.items.filter(item => item.id !== action.payload);
+      state.items = state.items.filter(item => item.name !== action.payload);
     },
-    increaseQuantity: (state, action) => {
-      const item = state.items.find(item => item.id === action.payload);
-      if (item) {
-        item.quantity += 1;
+    updateQuantity: (state, action) => {
+      const { name, amount } = action.payload;
+      const item = state.items.find(item => item.name === name);
+      if (item && amount > 0) {
+        item.quantity = amount; // Update with new quantity
       }
-    },
-    decreaseQuantity: (state, action) => {
-      const item = state.items.find(item => item.id === action.payload);
-      if (item && item.quantity > 1) {
-        item.quantity -= 1;
-      }
-    },
-    clearCart: (state) => {
-      state.items = [];
     }
   }
 });
 
-export const { addItem, removeItem, increaseQuantity, decreaseQuantity, clearCart } = cartSlice.actions;
+// Export actions for use in ProductList.jsx and CartItem.jsx
+export const { addItem, removeItem, updateQuantity } = cartSlice.actions;
+
+// Export reducer for store.js
 export default cartSlice.reducer;
